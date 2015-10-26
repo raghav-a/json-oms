@@ -10,6 +10,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>olympus</groupId>
+            <artifactId>xmpp-oms</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        <dependency>
             <groupId>olympus</groupId>
             <artifactId>xson</artifactId>
             <version>1.1.0</version>
@@ -23,25 +33,21 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>14.0</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>olympus</groupId>
+            <artifactId>oms</artifactId>
+            <version>1.9.1</version>
         </dependency>
         <dependency>
             <groupId>olympus</groupId>
             <artifactId>common</artifactId>
-            <version>1.2.5</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>olympus</groupId>
-            <artifactId>oms-json</artifactId>
-            <version>1.8.1</version>
-            <scope>provided</scope>
+            <version>1.2.7</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -64,7 +70,7 @@
     </dependencies>
 
     <build>
-        <finalName>xmpp-oms</finalName>
+        <finalName>json-oms</finalName>
 
         <plugins>
             <plugin>
