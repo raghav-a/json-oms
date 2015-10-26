@@ -25,5 +25,8 @@
         <module name="json-oms" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="json-oms" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
