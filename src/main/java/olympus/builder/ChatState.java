@@ -12,7 +12,13 @@ public class ChatState implements Message.MessagePayload {
         typing, reading;
     }
 
+    public STATE getState() {
+        return state;
+    }
+
     private STATE state;
+
+
 
     @Override
     public String toXml() {
