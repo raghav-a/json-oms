@@ -37,6 +37,10 @@ public class MessageHandler {
         if (messageData != null && !messageData.isEmpty()) {
             Map<String, Object> postMap = new ObjectMapper().readValue(messageData, new TypeReference<Map<String, Object>>() {
             });
+
+            String payload = gson.toJson(postMap.get("payload"));
+            Map<String, Object> payloadMap = new ObjectMapper().readValue(payload, new TypeReference<Map<String, Object>>() {
+            });
             JID to = new JID((String)postMap.get("to"));
             String version = (String)postMap.get("version");
             String api  = (String)postMap.get("api");
@@ -50,7 +54,7 @@ public class MessageHandler {
                 throw new RequestHandlingException("Unknown api: " + api);
             }
 
-            Object[] build = build(messageTenantMethod.method, to, sessionJID, type, id, postMap);
+            Object[] build = build(messageTenantMethod.method, to, sessionJID, type, id, payloadMap);
             messageTenantMethod.invoke(tenant, build);
 
         }
