@@ -3,7 +3,6 @@ package olympus.json.oms;
 import olympus.builder.ChatState;
 import olympus.builder.MessageBuilder;
 import olympus.json.oms.annotations.JSON;
-import olympus.message.types.RequestBuilder;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -11,7 +10,7 @@ import java.util.Map;
 
 public class MessageTenantMethod {
 
-    private final Method method;
+    final Method method;
     private final Class<? extends MessageBuilder> builderClass;
     private Map<String, Method> builderMethods;
 
@@ -31,7 +30,7 @@ public class MessageTenantMethod {
         return builderClass;
     }
 
-    public void invoke(Object tenant, RequestBuilder<?, ?> requestBuilder){
+    public void invoke(Object tenant, Object[] params){
 
     }
 
