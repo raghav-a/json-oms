@@ -1,7 +1,6 @@
 package olympus.json.oms;
 
 import olympus.common.JID;
-import olympus.common.UserAgent;
 import olympus.xmpp.oms.TenantFactory;
 
 import java.util.Map;
@@ -15,7 +14,7 @@ public class MessageHandlerFactory {
         this.apiResolver = new APIResolver();
     }
 
-    public MessageHandler newMessageHandler(JID sessionJID, UserAgent userAgent) {
-        return new MessageHandler(sessionJID, userAgent, apiResolver, tenantFactories);
+    public MessageHandler newMessageHandler(JID sessionJID, String socketID) {
+        return new MessageHandler(sessionJID, socketID, apiResolver, tenantFactories);
     }
 }

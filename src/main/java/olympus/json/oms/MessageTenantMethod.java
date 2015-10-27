@@ -4,6 +4,7 @@ import olympus.builder.ChatState;
 import olympus.builder.MessageBuilder;
 import olympus.json.oms.annotations.JSON;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +32,13 @@ public class MessageTenantMethod {
     }
 
     public void invoke(Object tenant, Object[] params){
-
+        try {
+            method.invoke(tenant, params);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
 

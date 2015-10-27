@@ -3,7 +3,6 @@ package olympus.json.oms;
 import com.google.gson.Gson;
 import olympus.builder.MessageBuilder;
 import olympus.common.JID;
-import olympus.common.UserAgent;
 import olympus.util.ReflectionUtils;
 import olympus.xmpp.oms.RequestHandlingException;
 import olympus.xmpp.oms.TenantFactory;
@@ -21,13 +20,13 @@ public class MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
     private static final Gson gson = new Gson();
     private JID sessionJID;
-    private final UserAgent userAgent;
+    private final String socketID;
     private final APIResolver apiResolver;
     private final Map<String, TenantFactory> tenantFactories;
 
-    public MessageHandler(JID sessionJID, UserAgent userAgent, APIResolver apiResolver, Map<String, TenantFactory> tenantFactories) {
+    public MessageHandler(JID sessionJID, String socketID, APIResolver apiResolver, Map<String, TenantFactory> tenantFactories) {
         this.sessionJID = sessionJID;
-        this.userAgent = userAgent;
+        this.socketID = socketID;
         this.apiResolver = apiResolver;
         this.tenantFactories = tenantFactories;
     }
@@ -61,7 +60,7 @@ public class MessageHandler {
 
     }
 
-    public Object[] build(Method method, JID to, JID sessionJID, String type, String id, Map<String, Object> postDoc) {
+    private Object[] build(Method method, JID to, JID sessionJID, String type, String id, Map<String, Object> postDoc) {
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes == null || paramTypes.length == 0 || paramTypes.length > 2) {
             throw new IllegalArgumentException("incorrect argument list in method");

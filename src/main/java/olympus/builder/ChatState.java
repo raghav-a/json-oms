@@ -2,13 +2,13 @@ package olympus.builder;
 
 import olympus.message.types.Message;
 
-public class ChatState implements Message.MessagePayload{
+public class ChatState implements Message.MessagePayload {
 
     public ChatState(STATE state) {
         this.state = state;
     }
 
-    enum STATE{
+    enum STATE {
         typing, reading;
     }
 
@@ -24,13 +24,17 @@ public class ChatState implements Message.MessagePayload{
         return "type";
     }
 
+    @Override
+    public String toString() {
+        return "{state:\"" + state + "\"}";
+    }
 
-    public static class Builder extends MessageBuilder<ChatState, Builder>{
+    public static class Builder extends MessageBuilder<ChatState, Builder> {
 
 
         private STATE state;
 
-        public Builder state(String state){
+        public Builder state(String state) {
             this.state = STATE.valueOf(state);
             return this;
         }
