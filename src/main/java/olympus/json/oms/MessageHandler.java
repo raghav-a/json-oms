@@ -45,6 +45,7 @@ public class MessageHandler {
             String api  = (String)postMap.get("api");
             String type   = (String)postMap.get("type");
             String id   = (String)postMap.get("id");
+            postMap.put("socketId",socketID);
 
             TenantFactory tenantFactory = tenantFactories.get(to.getPrimaryServiceName());
             Object tenant = tenantFactory.getTenant(to.getAppDomain(), version);

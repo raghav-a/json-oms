@@ -3,6 +3,8 @@ package olympus.builder;
 import olympus.common.JID;
 import olympus.message.types.Message;
 
+import java.util.Map;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class MessageBuilder<T extends Message.MessagePayload, D extends MessageBuilder> {
@@ -12,11 +14,19 @@ public abstract class MessageBuilder<T extends Message.MessagePayload, D extends
     private Message.MessagePayload payload;
     private String id;
     private String type;
+    private Map<String, String> attributes;
+    private String socketID;
 
     public D to(JID jid) {
         this.to = jid;
         return (D)this;
     }
+
+    public D socketId(String socketID) {
+        this.socketID = socketID;
+        return (D)this;
+    }
+
 
     public D from(JID jid) {
         this.from = jid;
@@ -48,6 +58,7 @@ public abstract class MessageBuilder<T extends Message.MessagePayload, D extends
         message.to(to);
         message.attr("type", type);
         message.attr("id", id);
+        message.attr("socketId", socketID);
         message.payload(payload);
 
         return message;

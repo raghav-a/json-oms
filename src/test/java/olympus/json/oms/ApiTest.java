@@ -28,9 +28,9 @@ public class ApiTest {
         MessageHandlerFactory messageHandlerFactory = new MessageHandlerFactory(tenantFactoryMap);
         MessageHandler messageHandler = messageHandlerFactory.newMessageHandler(new JID("raghav@go.to"), "socket");
         messageHandler.handle(
-                "{\"to\":\"raghav@go.to\"" +
+                "{\"to\":\"raghav@bgo.to\"" +
                         ",\"id\" :\"xyz\"," +
-                        "\"type\":\"xyz\"," +
+                        "\"type\":\"chat\"," +
                         "\"api\":\"chatstate\"," +
                         "\"payload\":{\"state\":\"typing\"}" +
                         "}");
