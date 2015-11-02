@@ -5,6 +5,7 @@ import olympus.apollo.ApolloServiceFactory;
 import olympus.common.JID;
 import olympus.common.OlympusService;
 import olympus.json.message.payload.ChatState;
+import olympus.json.message.payload.GenericPayload;
 import olympus.message.types.Message;
 import olympus.xmpp.oms.TenantFactory;
 import olympus.xson.Xson;
@@ -42,18 +43,33 @@ public class ApiTest {
                         "\"to\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"hemanshu\"}, " +
                         "\"id\":\"message-id\", \"api\":\"chatState\"}");
 
+        String another = "{\"payloads\":{\"onAnyMessage\":{\"body\":\"Body! Body!\",\"content\":\"Lots of content\"}},\"oid\":\"2cbc7c3b-f1a5-1600-0000-000000000002\",\"flowId\":\"2cbc7c3b-f1a5-1600-0000-000000000002\",\"from\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"raghav\"},\"to\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"hemanshu\"},\"id\":\"message-id\"}";
+        messageHandler.handle(another);
 
     }
 
     @Test
     public void test3() {
         Xson xson = new XsonBuilder().create();
-        Message src = new Message();
-        src.to(new JID("hemanshu@go.to"));
-        src.from(new JID("raghav@go.to"));
-        src.id("message-id");
-        src.payload(new ChatState(ACTIVE));
-        src.payload(new ChatState(COMPOSING));
-        System.out.println(new Gson().toJson(src));
+        Message messageWithChatStatePayload = new Message();
+        messageWithChatStatePayload.to(new JID("hemanshu@go.to"));
+        messageWithChatStatePayload.from(new JID("raghav@go.to"));
+        messageWithChatStatePayload.id("message-id");
+        messageWithChatStatePayload.payload(new ChatState(ACTIVE));
+        messageWithChatStatePayload.payload(new ChatState(COMPOSING));
+        System.out.println(new Gson().toJson(messageWithChatStatePayload));
+
+
+        Message messageWithGenericPayload = new Message();
+        messageWithGenericPayload.to(new JID("hemanshu@go.to"));
+        messageWithGenericPayload.from(new JID("raghav@go.to"));
+        messageWithGenericPayload.id("message-id");
+        GenericPayload payload = new GenericPayload();
+        payload.put("content","Lots of content");
+        payload.put("body","Body! Body!");
+        messageWithGenericPayload.payload(payload);
+        System.out.println(new Gson().toJson(messageWithGenericPayload));
+
+
     }
 }
