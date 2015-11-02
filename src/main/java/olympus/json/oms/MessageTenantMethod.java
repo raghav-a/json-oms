@@ -1,8 +1,7 @@
 package olympus.json.oms;
 
-import olympus.builder.ChatState;
-import olympus.builder.MessageBuilder;
-import olympus.json.oms.annotations.JSON;
+
+import olympus.json.message.builder.MessageBuilder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,18 +40,4 @@ public class MessageTenantMethod {
         }
     }
 
-
-    public static class Service{
-
-        @JSON
-        public void api(ChatState.Builder ch) {
-        }
-    }
-
-    public static void main(String[] args) {
-        APIResolver apiResolver = new APIResolver();
-        MessageTenantMethod api = apiResolver.getTenantMethod(new Service(), "api");
-        System.out.println(api);
-
-    }
 }

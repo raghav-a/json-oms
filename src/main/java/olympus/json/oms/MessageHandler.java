@@ -1,8 +1,9 @@
 package olympus.json.oms;
 
 import com.google.gson.Gson;
-import olympus.builder.MessageBuilder;
 import olympus.common.JID;
+import olympus.json.message.builder.MessageBuilder;
+import olympus.message.json.JSONSerializer;
 import olympus.util.ReflectionUtils;
 import olympus.xmpp.oms.RequestHandlingException;
 import olympus.xmpp.oms.TenantFactory;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 public class MessageHandler {
@@ -23,6 +25,7 @@ public class MessageHandler {
     private final String socketID;
     private final APIResolver apiResolver;
     private final Map<String, TenantFactory> tenantFactories;
+    private JSONSerializer json = new olympus.message.json.JSONSerializer();
 
     public MessageHandler(JID sessionJID, String socketID, APIResolver apiResolver, Map<String, TenantFactory> tenantFactories) {
         this.sessionJID = sessionJID;
@@ -32,36 +35,49 @@ public class MessageHandler {
     }
 
     public void handle(String messageData) throws IOException {
-
         if (messageData != null && !messageData.isEmpty()) {
-            Map<String, Object> postMap = new ObjectMapper().readValue(messageData, new TypeReference<Map<String, Object>>() {
+
+            String api;
+            Map<String, Object> mapOfjsonRcvdFromDoor = new ObjectMapper().readValue(messageData, new TypeReference<Map<String, Object>>() {
             });
 
-            String payload = gson.toJson(postMap.get("payload"));
-            Map<String, Object> payloadMap = new ObjectMapper().readValue(payload, new TypeReference<Map<String, Object>>() {
+            String payloadsInJson = gson.toJson(mapOfjsonRcvdFromDoor.get("payloads"));
+            Map<String, Object> payloads = new ObjectMapper().readValue(payloadsInJson, new TypeReference<Map<String, Object>>() {
             });
-            JID to = new JID((String)postMap.get("to"));
-            String version = (String)postMap.get("version");
-            String api  = (String)postMap.get("api");
-            String type   = (String)postMap.get("type");
-            String id   = (String)postMap.get("id");
-            postMap.put("socketId",socketID);
+            String id = (String) mapOfjsonRcvdFromDoor.get("id");
+            if (payloads.isEmpty()) {
+                throw new IllegalStateException("payloads cannot be empty" + messageData);
+            } else if (payloads.size() > 1) {
+                api = "onAnyMessage";
+            } else {
+                System.out.println("api is : "+payloads.keySet().iterator().next());
+                api = payloads.keySet().iterator().next();
+            }
+
+            JID to = new ObjectMapper().readValue(gson.toJson(mapOfjsonRcvdFromDoor.get("to")), new TypeReference<JID>() {
+
+            });
+            mapOfjsonRcvdFromDoor.put("socketId", socketID);
+
+            Map<String, Object> payloadMap = new ObjectMapper().readValue(gson.toJson(payloads.values().iterator().next()), new TypeReference<Map<String, Object>>() {
+            });
+
 
             TenantFactory tenantFactory = tenantFactories.get(to.getPrimaryServiceName());
-            Object tenant = tenantFactory.getTenant(to.getAppDomain(), version);
+            Object tenant = tenantFactory.getTenant(to.getAppDomain(), "version");
             MessageTenantMethod messageTenantMethod = apiResolver.getTenantMethod(tenant, api);
             if (messageTenantMethod == null) {
                 throw new RequestHandlingException("Unknown api: " + api);
             }
-
-            Object[] build = build(messageTenantMethod.method, to, sessionJID, type, id, payloadMap);
+            System.out.println("pay map" + payloadMap);
+            Object[] build = build(messageTenantMethod.method, to, sessionJID, payloadMap, id);
             messageTenantMethod.invoke(tenant, build);
 
         }
 
     }
 
-    private Object[] build(Method method, JID to, JID sessionJID, String type, String id, Map<String, Object> postDoc) {
+    private Object[] build(Method method, JID to, JID sessionJID, Map<String, Object> postDoc, String id) {
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes == null || paramTypes.length == 0 || paramTypes.length > 2) {
             throw new IllegalArgumentException("incorrect argument list in method");
@@ -86,13 +102,13 @@ public class MessageHandler {
 
         messageBuilder.from(sessionJID);
         messageBuilder.to(to);
-        messageBuilder.type(type);
         messageBuilder.id(id);
 
         for (Map.Entry<String, Object> entry : postDoc.entrySet()) {
             try {
                 Method m = ReflectionUtils.getMethod(messageBuilderClazz, entry.getKey());
                 if (m != null) {
+                    System.out.println("method" + method);
                     String json = gson.toJson(entry.getValue());
                     Object arg = gson.fromJson(json, m.getParameterTypes()[0]);
                     m.invoke(messageBuilder, arg);
@@ -112,4 +128,15 @@ public class MessageHandler {
     }
 
 
+    public static class Payloads {
+        private List<Object> payloads;
+
+        public List<Object> getPayloads() {
+            return payloads;
+        }
+
+        public void setPayloads(List<Object> payloads) {
+            this.payloads = payloads;
+        }
+    }
 }

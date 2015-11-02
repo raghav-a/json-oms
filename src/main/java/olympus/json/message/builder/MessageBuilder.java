@@ -1,17 +1,19 @@
-package olympus.builder;
+package olympus.json.message.builder;
 
 import olympus.common.JID;
 import olympus.message.types.Message;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class MessageBuilder<T extends Message.MessagePayload, D extends MessageBuilder> {
+public class MessageBuilder<T extends Message.MessagePayload, D extends MessageBuilder> {
 
     private JID to;
     private JID from;
-    private Message.MessagePayload payload;
+    private List<Message.MessagePayload> payloads = new ArrayList<>();
     private String id;
     private String type;
     private Map<String, String> attributes;
@@ -45,21 +47,22 @@ public abstract class MessageBuilder<T extends Message.MessagePayload, D extends
 
 
     public D payload(Message.MessagePayload payload) {
-        this.payload = payload;
+        this.payloads.add(payload);
         return (D)this;
     }
 
     public Message build() {
         checkNotNull(to);
-        checkNotNull(payload);
+        checkNotNull(payloads);
         Message message= new Message();
-
         message.from(from);
         message.to(to);
         message.attr("type", type);
         message.attr("id", id);
         message.attr("socketId", socketID);
-        message.payload(payload);
+        for (Message.MessagePayload payload : payloads) {
+            message.payload(payload);
+        }
 
         return message;
     }

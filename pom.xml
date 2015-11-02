@@ -41,6 +41,11 @@
         </dependency>
         <dependency>
             <groupId>olympus</groupId>
+            <artifactId>oms-json</artifactId>
+            <version>1.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>olympus</groupId>
             <artifactId>common</artifactId>
             <version>1.2.7</version>
         </dependency>
