@@ -3,6 +3,7 @@ package olympus.json.oms;
 import com.google.gson.Gson;
 import olympus.common.JID;
 import olympus.json.message.builder.MessageBuilder;
+import olympus.json.message.payload.GenericMessagePayload;
 import olympus.message.json.JSONSerializer;
 import olympus.util.ReflectionUtils;
 import olympus.xmpp.oms.RequestHandlingException;
@@ -50,7 +51,7 @@ public class MessageHandler {
             } else if (payloads.size() > 1) {
                 api = "onAnyMessage";
             } else {
-                System.out.println("api is : "+payloads.keySet().iterator().next());
+                System.out.println("api is : " + payloads.keySet().iterator().next());
                 api = payloads.keySet().iterator().next();
             }
 
@@ -106,15 +107,21 @@ public class MessageHandler {
 
         for (Map.Entry<String, Object> entry : postDoc.entrySet()) {
             try {
-                Method m = ReflectionUtils.getMethod(messageBuilderClazz, entry.getKey());
-                if (m != null) {
-                    System.out.println("method" + method);
-                    String json = gson.toJson(entry.getValue());
-                    Object arg = gson.fromJson(json, m.getParameterTypes()[0]);
-                    m.invoke(messageBuilder, arg);
+                if (messageBuilder instanceof GenericMessagePayload.Builder) {
+                    ((GenericMessagePayload.Builder)messageBuilder).put(entry.getKey(), entry.getValue());
                 } else {
-                    logger.debug("no builder method found for property {}. ignoring.", entry.getKey());
+                    Method m = ReflectionUtils.getMethod(messageBuilderClazz, entry.getKey());
+                    if (m != null) {
+                        System.out.println("method" + method);
+                        String json = gson.toJson(entry.getValue());
+                        Object arg = gson.fromJson(json, m.getParameterTypes()[0]);
+                        m.invoke(messageBuilder, arg);
+                    } else {
+                        logger.debug("no builder method found for property {}. ignoring.", entry.getKey());
+                    }
                 }
+
+
             } catch (Throwable cause) {
                 logger.error("error while invoking builder", cause);
             }
