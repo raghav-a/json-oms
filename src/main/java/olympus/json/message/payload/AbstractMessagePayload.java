@@ -13,5 +13,7 @@ public abstract class AbstractMessagePayload implements Message.MessagePayload{
     private List<Action> actions;
 
 
-
+    public List<Action> getActions() {
+        return actions;
+    }
 }
