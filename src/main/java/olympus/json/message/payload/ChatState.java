@@ -3,7 +3,9 @@ package olympus.json.message.payload;
 import olympus.json.message.builder.MessageBuilder;
 import olympus.message.types.Message;
 
-public class ChatState implements Message.MessagePayload {
+import java.util.List;
+
+public class ChatState extends AbstractMessagePayload{
     public static enum Type {
         ACTIVE,
         INACTIVE,
@@ -14,7 +16,8 @@ public class ChatState implements Message.MessagePayload {
 
     private final Type t;
 
-    public ChatState(Type t) {
+    public ChatState(Type t, List<Action> actions) {
+        super(actions);
         this.t = t;
     }
 
@@ -28,11 +31,8 @@ public class ChatState implements Message.MessagePayload {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ChatState)) return false;
-
         ChatState chatState = (ChatState) o;
-
         if (t != chatState.t) return false;
-
         return true;
     }
 
@@ -49,16 +49,16 @@ public class ChatState implements Message.MessagePayload {
 
     public static class Builder extends MessageBuilder<olympus.message.types.messagePayload.ChatState, Builder> {
 
-        private olympus.message.types.messagePayload.ChatState.Type type;
+        private Type type;
 
-        public ChatState.Builder type(olympus.message.types.messagePayload.ChatState.Type type){
+        public ChatState.Builder type(Type type){
             this.type = type;
             return this;
         }
 
         @Override
         public Message build() {
-            payload(new olympus.message.types.messagePayload.ChatState(type));
+            payload(new ChatState(type, actions));
             return super.build();
         }
     }

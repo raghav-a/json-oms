@@ -38,47 +38,46 @@ public class MessageHandler {
     public void handle(String messageData) throws IOException {
         if (messageData != null && !messageData.isEmpty()) {
 
-            String api;
-            Map<String, Object> mapOfjsonRcvdFromDoor = new ObjectMapper().readValue(messageData, new TypeReference<Map<String, Object>>() {
+            Map<String, Object> mapOfJsonRcvdFromDoor = new ObjectMapper().readValue(messageData, new TypeReference<Map<String, Object>>() {
             });
 
-            String payloadsInJson = gson.toJson(mapOfjsonRcvdFromDoor.get("payloads"));
+            String payloadsInJson = gson.toJson(mapOfJsonRcvdFromDoor.remove("payloads"));
             Map<String, Object> payloads = new ObjectMapper().readValue(payloadsInJson, new TypeReference<Map<String, Object>>() {
             });
-            String id = (String) mapOfjsonRcvdFromDoor.get("id");
+
+
+            String api;
+            Map<String, Object> dataMapOfFirstPayload;
+
             if (payloads.isEmpty()) {
                 throw new IllegalStateException("payloads cannot be empty" + messageData);
             } else if (payloads.size() > 1) {
-                api = "onAnyMessage";
+                throw new IllegalStateException("payloads cannot be more than one" + messageData);
             } else {
-                System.out.println("api is : " + payloads.keySet().iterator().next());
-                api = payloads.keySet().iterator().next();
+                Map.Entry<String, Object> firstPayload = payloads.entrySet().iterator().next();
+                api = firstPayload.getKey();
+                dataMapOfFirstPayload = new ObjectMapper().readValue(gson.toJson(firstPayload.getValue()), new TypeReference<Map<String, Object>>() {
+                });
+                String id = (String) mapOfJsonRcvdFromDoor.remove("id");
+                JID to = new ObjectMapper().readValue(gson.toJson(mapOfJsonRcvdFromDoor.remove("to")), new TypeReference<JID>() {
+                });
+                mapOfJsonRcvdFromDoor.put("socketId", socketID);
+                TenantFactory tenantFactory = tenantFactories.get(to.getPrimaryServiceName());
+                Object tenant = tenantFactory.getTenant(to.getAppDomain(), null);
+                MessageTenantMethod messageTenantMethod = apiResolver.getTenantMethod(tenant, api);
+                if (messageTenantMethod == null) {
+                    throw new RequestHandlingException("Unknown api: " + api);
+                }
+                Object[] params = getParametersForApiMethodCall(messageTenantMethod.method, to, sessionJID, dataMapOfFirstPayload, id, mapOfJsonRcvdFromDoor);
+                messageTenantMethod.invoke(tenant, params);
             }
-
-            JID to = new ObjectMapper().readValue(gson.toJson(mapOfjsonRcvdFromDoor.get("to")), new TypeReference<JID>() {
-
-            });
-            mapOfjsonRcvdFromDoor.put("socketId", socketID);
-
-            Map<String, Object> payloadMap = new ObjectMapper().readValue(gson.toJson(payloads.values().iterator().next()), new TypeReference<Map<String, Object>>() {
-            });
-
-
-            TenantFactory tenantFactory = tenantFactories.get(to.getPrimaryServiceName());
-            Object tenant = tenantFactory.getTenant(to.getAppDomain(), "version");
-            MessageTenantMethod messageTenantMethod = apiResolver.getTenantMethod(tenant, api);
-            if (messageTenantMethod == null) {
-                throw new RequestHandlingException("Unknown api: " + api);
-            }
-            System.out.println("pay map" + payloadMap);
-            Object[] build = build(messageTenantMethod.method, to, sessionJID, payloadMap, id);
-            messageTenantMethod.invoke(tenant, build);
-
         }
-
     }
 
-    private Object[] build(Method method, JID to, JID sessionJID, Map<String, Object> postDoc, String id) {
+    private Object[] getParametersForApiMethodCall(Method method, JID to, JID sessionJID, Map<String, Object> postDoc, String id, Map<String, Object> mapOfJsonRcvdFromDoor) {
+
+
+
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes == null || paramTypes.length == 0 || paramTypes.length > 2) {
             throw new IllegalArgumentException("incorrect argument list in method");
@@ -104,6 +103,10 @@ public class MessageHandler {
         messageBuilder.from(sessionJID);
         messageBuilder.to(to);
         messageBuilder.id(id);
+
+        for (Map.Entry<String, Object> entry : mapOfJsonRcvdFromDoor.entrySet()) {
+            messageBuilder.addAttribute(entry.getKey(), (String)entry.getValue());
+        }
 
         for (Map.Entry<String, Object> entry : postDoc.entrySet()) {
             try {

@@ -17,8 +17,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static olympus.json.message.payload.ChatState.Type.ACTIVE;
-import static olympus.json.message.payload.ChatState.Type.COMPOSING;
+import static com.google.common.collect.Lists.newArrayList;
+import static olympus.json.message.payload.Action.History;
+import static olympus.json.message.payload.Action.Notify;
 
 
 public class ApiTest {
@@ -43,9 +44,13 @@ public class ApiTest {
                 "{\"payloads\":{\"chatState\":{\"t\":\"COMPOSING\"}},\"oid\":\"37dbf091-69eb-8a00-0000-000000000001\",\"flowId\":\"37dbf091-69eb-8a00-0000-000000000001\"" +
                         ",\"from\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"raghav\"}," +
                         "\"to\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"hemanshu\"}, " +
-                        "\"id\":\"message-id\", \"api\":\"chatState\"}");
+                        "\"id\":\"message-id\"}");
 
-        String another = "{\"payloads\":{\"genericMessage\":{\"body\":\"Body! Body!\",\"content\":\"Lots of content\"}},\"oid\":\"2cbc7c3b-f1a5-1600-0000-000000000002\",\"flowId\":\"2cbc7c3b-f1a5-1600-0000-000000000002\",\"from\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"raghav\"},\"to\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"hemanshu\"},\"id\":\"message-id\"}";
+        String another = "{\"payloads\":{\"genericMessage\":{\"body\":\"Body! Body!\",\"content\":\"Lots of content\"}}," +
+                "\"oid\":\"2cbc7c3b-f1a5-1600-0000-000000000002\",\"flowId\":\"2cbc7c3b-f1a5-1600-0000-000000000002\"," +
+                "\"from\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"raghav\"}," +
+                "\"to\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"hemanshu\"}," +
+                "\"id\":\"message-id\"}";
         messageHandler.handle(another);
 
     }
@@ -57,8 +62,8 @@ public class ApiTest {
         messageWithChatStatePayload.to(new JID("hemanshu@go.to"));
         messageWithChatStatePayload.from(new JID("raghav@go.to"));
         messageWithChatStatePayload.id("message-id");
-        messageWithChatStatePayload.payload(new ChatState(ACTIVE));
-        messageWithChatStatePayload.payload(new ChatState(COMPOSING));
+        messageWithChatStatePayload.payload(new ChatState(ChatState.Type.ACTIVE, newArrayList()));
+        messageWithChatStatePayload.payload(new ChatState(ChatState.Type.COMPOSING, newArrayList() ));
         System.out.println(new Gson().toJson(messageWithChatStatePayload));
 
 
@@ -71,6 +76,14 @@ public class ApiTest {
         payload.put("body","Body! Body!");
         messageWithGenericPayload.payload(payload);
         System.out.println(new Gson().toJson(messageWithGenericPayload));
+
+
+        Message mess2 = new Message();
+        mess2.to(new JID("hemanshu@go.to"));
+        mess2.from(new JID("raghav@go.to"));
+        mess2.id("message-id");
+        mess2.payload(new ChatState(ChatState.Type.ACTIVE, newArrayList(History, Notify)));
+        System.out.println(new Gson().toJson(mess2));
 
 
     }
