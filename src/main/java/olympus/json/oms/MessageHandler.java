@@ -77,7 +77,6 @@ public class MessageHandler {
     private Object[] getParametersForApiMethodCall(Method method, JID to, JID sessionJID, Map<String, Object> postDoc, String id, Map<String, Object> mapOfJsonRcvdFromDoor) {
 
 
-
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes == null || paramTypes.length == 0 || paramTypes.length > 2) {
             throw new IllegalArgumentException("incorrect argument list in method");
@@ -101,7 +100,11 @@ public class MessageHandler {
         }
 
         for (Map.Entry<String, Object> entry : mapOfJsonRcvdFromDoor.entrySet()) {
-            messageBuilder.addAttribute(entry.getKey(), (String)entry.getValue());
+            Object entryValue = entry.getValue();
+            if (entryValue instanceof String) {
+                String value = (String) entryValue;
+                messageBuilder.addAttribute(entry.getKey(), value);
+            }
         }
 
         messageBuilder.from(sessionJID);
@@ -111,7 +114,7 @@ public class MessageHandler {
         for (Map.Entry<String, Object> entry : postDoc.entrySet()) {
             try {
                 if (messageBuilder instanceof GenericMessagePayload.Builder) {
-                    ((GenericMessagePayload.Builder)messageBuilder).put(entry.getKey(), entry.getValue());
+                    ((GenericMessagePayload.Builder) messageBuilder).put(entry.getKey(), entry.getValue());
                 } else {
                     Method m = ReflectionUtils.getMethod(messageBuilderClazz, entry.getKey());
                     if (m != null) {

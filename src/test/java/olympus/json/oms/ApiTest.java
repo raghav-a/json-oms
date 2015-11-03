@@ -41,7 +41,7 @@ public class ApiTest {
 
         MessageHandlerFactory messageHandlerFactory = new MessageHandlerFactory(tenantFactoryMap);
         MessageHandler messageHandler = messageHandlerFactory.newMessageHandler(new JID("raghav@go.to"), "socket");
-        messageHandler.handle(
+        /*messageHandler.handle(
                 "{\"payloads\":{\"chatState\":{\"t\":\"COMPOSING\"}},\"oid\":\"37dbf091-69eb-8a00-0000-000000000001\",\"flowId\":\"37dbf091-69eb-8a00-0000-000000000001\"" +
                         ",\"from\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"raghav\"}," +
                         "\"to\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"hemanshu\"}, " +
@@ -52,7 +52,7 @@ public class ApiTest {
                 "\"from\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"raghav\"}," +
                 "\"to\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"hemanshu\"}," +
                 "\"id\":\"message-id\"}";
-        messageHandler.handle(another);
+        messageHandler.handle(another);*/
 
         String withActions = "{\"payloads\":{\"chatState\":{\"t\":\"COMPOSING\",\"actions\":[\"History\",\"Notify\"],\"ignoreActions\":[\"Reflection\"]}},\"oid\":\"37dbf091-69eb-8a00-0000-000000000001\",\"flowId\":\"37dbf091-69eb-8a00-0000-000000000001\"" +
                 ",\"from\":{\"appDomain\":\"go.to\",\"serviceName\":\"apollo\",\"nodeId\":\"raghav\"}," +
