@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 public class MessageHandler {
@@ -118,7 +117,6 @@ public class MessageHandler {
                 } else {
                     Method m = ReflectionUtils.getMethod(messageBuilderClazz, entry.getKey());
                     if (m != null) {
-                        System.out.println("method" + method);
                         String json = gson.toJson(entry.getValue());
                         Object arg = gson.fromJson(json, m.getParameterTypes()[0]);
                         m.invoke(messageBuilder, arg);
@@ -134,22 +132,5 @@ public class MessageHandler {
         }
 
         return args;
-    }
-
-    public static void main(String[] args) {
-
-    }
-
-
-    public static class Payloads {
-        private List<Object> payloads;
-
-        public List<Object> getPayloads() {
-            return payloads;
-        }
-
-        public void setPayloads(List<Object> payloads) {
-            this.payloads = payloads;
-        }
     }
 }
