@@ -2,6 +2,7 @@ package olympus.json.message.builder;
 
 import olympus.common.JID;
 import olympus.json.message.payload.Action;
+import olympus.json.message.payload.IgnoreAction;
 import olympus.message.types.Message;
 
 import java.util.*;
@@ -17,6 +18,7 @@ public class MessageBuilder<T extends Message.MessagePayload, D extends MessageB
     private String type;
     private Map<String, String> attributes = new HashMap<>();
     protected List<Action> actions = new ArrayList<>();
+    protected List<IgnoreAction> ignoreActions = new ArrayList<>();
     private String socketID;
 
     public D to(JID jid) {
@@ -50,11 +52,13 @@ public class MessageBuilder<T extends Message.MessagePayload, D extends MessageB
        attributes.put(key, value);
     }
 
-    public void addAttribute(List<Action> actions) {
+    public void actions(List<Action> actions) {
         this.actions = actions;
     }
 
-
+    public void ignoreActions(List<IgnoreAction> actions) {
+        this.ignoreActions = actions;
+    }
 
     public D payload(Message.MessagePayload payload) {
         this.payloads.add(payload);

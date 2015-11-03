@@ -100,13 +100,13 @@ public class MessageHandler {
             throw new IllegalArgumentException(t);
         }
 
-        messageBuilder.from(sessionJID);
-        messageBuilder.to(to);
-        messageBuilder.id(id);
-
         for (Map.Entry<String, Object> entry : mapOfJsonRcvdFromDoor.entrySet()) {
             messageBuilder.addAttribute(entry.getKey(), (String)entry.getValue());
         }
+
+        messageBuilder.from(sessionJID);
+        messageBuilder.to(to);
+        messageBuilder.id(id);
 
         for (Map.Entry<String, Object> entry : postDoc.entrySet()) {
             try {

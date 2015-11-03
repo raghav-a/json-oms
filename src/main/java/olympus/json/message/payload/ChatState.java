@@ -16,8 +16,8 @@ public class ChatState extends AbstractMessagePayload{
 
     private final Type t;
 
-    public ChatState(Type t, List<Action> actions) {
-        super(actions);
+    public ChatState(Type t, List<Action> actions, List<IgnoreAction> ignoreActions) {
+        super(actions, ignoreActions);
         this.t = t;
     }
 
@@ -58,7 +58,7 @@ public class ChatState extends AbstractMessagePayload{
 
         @Override
         public Message build() {
-            payload(new ChatState(type, actions));
+            payload(new ChatState(type, actions, ignoreActions));
             return super.build();
         }
     }
